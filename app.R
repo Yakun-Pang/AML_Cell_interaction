@@ -59,7 +59,7 @@ server <- function(input, output,session) {
     
     output$Plot <- renderPlot({
       
-      p <- ggplot(filtered_data(), aes(x =pathway, y = Sample, size = -log10(pval+0.00001), fill = as.numeric(mean))) +
+      p <- ggplot(filtered_data(), aes(x =Sample, y = pathway, size = -log10(pval+0.00001), fill = as.numeric(mean))) +
         geom_point(shape = 21) +
         scale_fill_gradientn(colors=met.brewer("Hokusai1",direction =-1),name = "Mean")+
         #scale_fill_met_c("Hokusai1", name = "Mean",direction=-1)+
@@ -78,6 +78,8 @@ server <- function(input, output,session) {
     
   })
 }
+
 enableBookmarking(store = "url")
 
 shinyApp(ui, server)
+
