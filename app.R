@@ -4,8 +4,8 @@ library(ggplot2)
 library(MetBrewer)
 
 ##load data
-df_aml<-readRDS(file = "/Users/yakun/Downloads/ALSF_AML_plot/AML_interaction.rds")
-df_hbm<-readRDS(file = "/Users/yakun/Downloads/ALSF_AML_plot/HBM_interaction.rds")
+df_aml<-readRDS(file = "AML_interaction.rds")
+df_hbm<-readRDS(file = "HBM_interaction.rds")
 ## Only run examples in interactive R sessions
 
 
@@ -81,14 +81,3 @@ server <- function(input, output,session) {
 enableBookmarking(store = "url")
 
 shinyApp(ui, server)
-
-#export shiny app to github
-#install.packages("pak")
-#pak::pak("posit-dev/r-shinylive")
-#pak::pak("rstudio/httpuv")
-
-#shinylive::export(appdir = "/Users/yakun/shinyAppH5ad/AML_interaction_app/",
-#                  destdir = "/Users/yakun/shinyAppH5ad/AML_interaction_app/docs")
-
-
-#httpuv::runStaticServer("/Users/yakun/shinyAppH5ad/AML_interaction_app/docs", port=8008)
