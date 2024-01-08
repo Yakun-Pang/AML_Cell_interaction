@@ -101,4 +101,4 @@ enableBookmarking(store = "url")
 shinyApp(ui, server)
 
 
-runGitHub( "AML_Cell_interaction", "Yakun-Pang")
+#runGitHub( "AML_Cell_interaction", "Yakun-Pang")
