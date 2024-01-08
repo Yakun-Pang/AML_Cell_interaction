@@ -1,4 +1,8 @@
-rm(list=ls())
+
+list.of.packages <- c("ggplot2", "shiny","MetBrewer")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
 library(shiny)
 library(ggplot2)
 library(MetBrewer)
@@ -35,6 +39,7 @@ ui <- fluidPage(
     ),
     mainPanel(
       plotOutput("Plot"),
+      downloadButton('downloadPlot','Download Plot'),
       DT::dataTableOutput(outputId = "table")
     )
   )
@@ -50,16 +55,14 @@ server <- function(input, output,session) {
     updateSelectInput(session,'receptor',
                       choices=unique(df$Receptor[df$Sample==input$sample & df$Sender==input$sender]))
   }) 
+  
   observeEvent(input$do, {
     filtered_data <- reactive({
       subset(df,
              Sample%in% input$sample & Sender %in% input$sender & Receptor%in% input$receptor &
                pval <= input$P_value)})
-    
-    
     output$Plot <- renderPlot({
-      
-      p <- ggplot(filtered_data(), aes(x =Sample, y = pathway, size = -log10(pval+0.00001), fill = as.numeric(mean))) +
+       p <- ggplot(filtered_data(), aes(x =Sample, y = pathway, size = -log10(pval+0.00001), fill = as.numeric(mean))) +
         geom_point(shape = 21) +
         scale_fill_gradientn(colors=met.brewer("Hokusai1",direction =-1),name = "Mean")+
         #scale_fill_met_c("Hokusai1", name = "Mean",direction=-1)+
@@ -72,14 +75,30 @@ server <- function(input, output,session) {
       
     })
     
+    p <- ggplot(filtered_data(), aes(x =Sample, y = pathway, size = -log10(pval+0.00001), fill = as.numeric(mean))) +
+      geom_point(shape = 21) +
+      scale_fill_gradientn(colors=met.brewer("Hokusai1",direction =-1),name = "Mean")+
+      #scale_fill_met_c("Hokusai1", name = "Mean",direction=-1)+
+      labs(x = "", y = "")+
+      theme(axis.text.x =element_text(face="bold", angle = 90,
+                                      size=8),
+            axis.text.y = element_text(face="bold",hjust = 0,
+                                       size=8))
+    
+    output$downloadPlot <- downloadHandler(
+      filename = function(){paste(input$sender,input$receptor,'interaction.png',sep="_")},
+      content = function(file){
+        ggsave(file,plot=p, width = 8, height = 16, dpi = 300)
+      })
     output$table <- DT::renderDataTable({
       filtered_data()
     })
     
   })
 }
-
 enableBookmarking(store = "url")
 
 shinyApp(ui, server)
 
+
+runGitHub( "AML_Cell_interaction", "Yakun-Pang")
